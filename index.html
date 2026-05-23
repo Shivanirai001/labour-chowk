@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Labour Chowk – Find Workers Near You</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;800&family=Noto+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'Noto Sans', sans-serif; }
+    h1, h2, h3, .brand { font-family: 'Baloo 2', cursive; }
+    .hero-bg {
+      background: linear-gradient(135deg, #f97316 0%, #ea580c 40%, #c2410c 100%);
+    }
+    .card-hover {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+    }
+    .skill-chip { transition: all 0.15s ease; cursor: pointer; }
+    .skill-chip:hover, .skill-chip.active {
+      background: #ea580c; color: white; border-color: #ea580c;
+    }
+    .fade-in { animation: fadeUp 0.4s ease forwards; opacity: 0; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .available-dot { animation: pulse 2s infinite; }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+  </style>
+</head>
+<body class="bg-orange-50 min-h-screen">
+
+  <!-- NAVBAR -->
+  <nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <span class="brand text-2xl font-bold text-orange-600">🏗️ Labour Chowk</span>
+      <div class="flex gap-3">
+        <a href="index.html" class="text-sm font-medium text-gray-700 hover:text-orange-600 px-3 py-1.5 rounded-lg hover:bg-orange-50 transition">Home</a>
+        <a href="register.html" class="text-sm font-medium bg-orange-500 text-white px-4 py-1.5 rounded-lg hover:bg-orange-600 transition">Register as Worker</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero-bg text-white py-12 px-4">
+    <div class="max-w-6xl mx-auto text-center">
+      <h1 class="text-4xl md:text-5xl font-extrabold mb-3">Find Skilled Workers<br>Near You</h1>
+      <p class="text-orange-100 text-lg mb-8">Plumbers, electricians, painters & more – available in your area</p>
+      <div class="bg-white rounded-2xl p-3 max-w-2xl mx-auto flex flex-col sm:flex-row gap-2 shadow-xl">
+        <input id="searchInput" type="text" placeholder="Search by name or skill..."
+          class="flex-1 px-4 py-2 text-gray-800 rounded-xl outline-none text-sm" oninput="filterWorkers()"/>
+        <select id="areaFilter" class="px-4 py-2 text-gray-700 rounded-xl border border-gray-200 text-sm outline-none" onchange="filterWorkers()">
+          <option value="">All Areas</option>
+          <option>Faridabad</option>
+          <option>Ballabhgarh</option>
+          <option>NIT Faridabad</option>
+          <option>Sector 15</option>
+          <option>Sector 21</option>
+          <option>Old Faridabad</option>
+        </select>
+        <button onclick="filterWorkers()" class="bg-orange-500 hover:bg-orange-600 text-white px-6 py-2 rounded-xl text-sm font-semibold transition">Search</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- SKILL CHIPS -->
+  <section class="bg-white border-b border-gray-100 py-4 px-4 sticky top-14 z-40 shadow-sm">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex gap-2 overflow-x-auto pb-1 flex-wrap">
+        <button onclick="setSkillFilter('')"            class="skill-chip active text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap font-medium" id="chip-all">All Workers</button>
+        <button onclick="setSkillFilter('Plumber')"     class="skill-chip text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap">🔧 Plumber</button>
+        <button onclick="setSkillFilter('Electrician')" class="skill-chip text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap">⚡ Electrician</button>
+        <button onclick="setSkillFilter('Painter')"     class="skill-chip text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap">🎨 Painter</button>
+        <button onclick="setSkillFilter('Carpenter')"   class="skill-chip text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap">🪚 Carpenter</button>
+        <button onclick="setSkillFilter('Driver')"      class="skill-chip text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap">🚗 Driver</button>
+        <button onclick="setSkillFilter('Welder')"      class="skill-chip text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap">🔩 Welder</button>
+        <button onclick="setSkillFilter('Mason')"       class="skill-chip text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap">🧱 Mason</button>
+        <button onclick="setSkillFilter('Cleaner')"     class="skill-chip text-sm border border-gray-300 text-gray-700 px-4 py-1.5 rounded-full whitespace-nowrap">🧹 Cleaner</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKER LISTING -->
+  <main class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-gray-800">Available Workers <span id="workerCount" class="text-orange-500"></span></h2>
+      <p class="text-sm text-gray-500">Updated daily</p>
+    </div>
+    <div id="workerGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5"></div>
+    <div id="emptyState" class="hidden text-center py-20">
+      <p class="text-5xl mb-4">🔍</p>
+      <p class="text-gray-500 text-lg">No workers found.</p>
+      <p class="text-gray-400 text-sm mt-2">Try a different area or skill.</p>
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-800 text-gray-400 text-center py-6 mt-12 text-sm">
+    <p class="brand text-white text-lg mb-1">🏗️ Labour Chowk</p>
+    <p>Connecting workers with opportunities in Faridabad & nearby areas.</p>
+    <p class="mt-2"><a href="register.html" class="text-orange-400 hover:underline">Register as a worker →</a></p>
+  </footer>
+
+  <!-- Supabase -->
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+    import { SUPABASE_URL, SUPABASE_KEY } from './firebase-config.js';
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    window._supabase = supabase;
+
+    loadWorkers();
+  </script>
+
+  <script>
+    const SAMPLE_WORKERS = [
+      { id:1, name:"Ramesh Kumar",  skill:"Plumber",     area:"Faridabad",     phone:"9876543210", available:true,  experience:"5 years",  rating:4.8 },
+      { id:2, name:"Suresh Singh",  skill:"Electrician", area:"Ballabhgarh",   phone:"9812345678", available:true,  experience:"8 years",  rating:4.5 },
+      { id:3, name:"Mahesh Yadav",  skill:"Painter",     area:"NIT Faridabad", phone:"9898989898", available:false, experience:"3 years",  rating:4.2 },
+      { id:4, name:"Dinesh Gupta",  skill:"Carpenter",   area:"Sector 15",     phone:"9754321098", available:true,  experience:"10 years", rating:4.9 },
+      { id:5, name:"Kamal Sharma",  skill:"Driver",      area:"Old Faridabad", phone:"9711223344", available:true,  experience:"6 years",  rating:4.6 },
+    ];
+
+    let allWorkers  = [...SAMPLE_WORKERS];
+    let activeSkill = '';
+
+    async function loadWorkers() {
+      try {
+        if (window._supabase) {
+          const { data, error } = await window._supabase
+            .from('workers')
+            .select('*')
+            .eq('approved', true);
+
+          if (!error && data && data.length > 0) {
+            allWorkers = data;
+          }
+        }
+      } catch(e) {
+        console.log('Using sample data');
+      }
+      filterWorkers();
+    }
+    window.loadWorkers = loadWorkers;
+
+    function filterWorkers() {
+      const search = (document.getElementById('searchInput').value || '').toLowerCase();
+      const area   = document.getElementById('areaFilter').value;
+      const filtered = allWorkers.filter(w => {
+        const matchSearch = !search || w.name.toLowerCase().includes(search) || w.skill.toLowerCase().includes(search);
+        const matchArea   = !area   || w.area === area;
+        const matchSkill  = !activeSkill || w.skill === activeSkill;
+        return matchSearch && matchArea && matchSkill;
+      });
+      renderWorkers(filtered);
+    }
+    window.filterWorkers = filterWorkers;
+
+    function setSkillFilter(skill) {
+      activeSkill = skill;
+      document.querySelectorAll('.skill-chip').forEach(c => c.classList.remove('active'));
+      if (!skill) document.getElementById('chip-all').classList.add('active');
+      filterWorkers();
+    }
+    window.setSkillFilter = setSkillFilter;
+
+    function renderWorkers(workers) {
+      const grid  = document.getElementById('workerGrid');
+      const empty = document.getElementById('emptyState');
+      document.getElementById('workerCount').textContent = `(${workers.length})`;
+      if (workers.length === 0) {
+        grid.innerHTML = '';
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+      grid.innerHTML = workers.map((w, i) => `
+        <div class="card-hover fade-in bg-white rounded-2xl shadow-sm border border-orange-100 p-5 flex flex-col gap-3"
+             style="animation-delay:${i * 60}ms">
+          <div class="flex items-start justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center text-xl font-bold text-orange-600">
+                ${w.name.charAt(0)}
+              </div>
+              <div>
+                <p class="font-semibold text-gray-900">${w.name}</p>
+                <p class="text-xs text-gray-500">${w.experience || ''}</p>
+              </div>
+            </div>
+            <span class="flex items-center gap-1 text-xs font-medium px-2.5 py-1 rounded-full
+              ${w.available ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}">
+              <span class="w-1.5 h-1.5 rounded-full inline-block ${w.available ? 'available-dot bg-green-500' : 'bg-gray-400'}"></span>
+              ${w.available ? 'Available' : 'Busy'}
+            </span>
+          </div>
+          <div class="flex flex-wrap gap-2">
+            <span class="text-xs bg-orange-50 text-orange-700 border border-orange-200 px-3 py-1 rounded-full font-medium">
+              ${skillEmoji(w.skill)} ${w.skill}
+            </span>
+            <span class="text-xs bg-gray-50 text-gray-600 border border-gray-200 px-3 py-1 rounded-full">
+              📍 ${w.area}
+            </span>
+          </div>
+          ${w.rating ? `<div class="flex items-center gap-1 text-sm text-amber-500">${starRating(w.rating)} <span class="text-gray-500 text-xs">${w.rating}/5</span></div>` : ''}
+          <div class="flex gap-2 mt-auto pt-2 border-t border-gray-100">
+            <a href="tel:${w.phone}" class="flex-1 text-center text-sm font-medium border border-orange-300 text-orange-600 py-2 rounded-xl hover:bg-orange-50 transition">
+              📞 Call
+            </a>
+            <a href="https://wa.me/91${w.phone}?text=Hi%20${encodeURIComponent(w.name)}%2C%20I%20found%20you%20on%20Labour%20Chowk.%20Are%20you%20available%3F"
+               target="_blank"
+               class="flex-1 text-center text-sm font-medium bg-green-500 text-white py-2 rounded-xl hover:bg-green-600 transition">
+              💬 WhatsApp
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function skillEmoji(skill) {
+      const map = { Plumber:'🔧', Electrician:'⚡', Painter:'🎨', Carpenter:'🪚', Driver:'🚗', Welder:'🔩', Mason:'🧱', Cleaner:'🧹' };
+      return map[skill] || '👷';
+    }
+
+    function starRating(r) {
+      return '★'.repeat(Math.floor(r)) + '☆'.repeat(5 - Math.floor(r));
+    }
+
+    filterWorkers();
+  </script>
+</body>
+</html>

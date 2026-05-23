@@ -1,0 +1,2 @@
+export const SUPABASE_URL = "https://gyllwcfwvtkotkicbgtl.supabase.co";
+export const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imd5bGx3Y2Z3dnRrb3RraWNiZ3RsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1MzE4NjgsImV4cCI6MjA5NTEwNzg2OH0.i-GyW7nMahXB0I2T9e8oTtUJ6p17edpKDjhkC9bHBQg";
